@@ -77,7 +77,7 @@ public class MainActivity extends BaseActivity {
             public void onItemDelete(int position) {
                 AppDatabase.getAppDatabase(MainActivity.this).noteDao().delete(noteList.get(position));
                 noteList.remove(position);
-                notesAdapter.updateList(noteList);
+                notesAdapter.updateListAfterRemoving(position);
             }
         });
     }
