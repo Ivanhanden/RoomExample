@@ -18,6 +18,15 @@ import androidx.recyclerview.widget.RecyclerView;
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> {
     private List<Note> dataset;
     private Context context;
+    private OnItemClickListener mListener;
+
+    public interface OnItemClickListener{
+        void onItemDelete(int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener){
+        mListener = listener;
+    }
 
     public NotesAdapter(List<Note> dataset, Context context) {
         this.dataset = dataset;
@@ -27,7 +36,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     @Override
     public NotesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.note_item, parent, false);
-        return new ViewHolder(view);
+        return new ViewHolder(view, mListener);
     }
 
     @Override
@@ -50,12 +59,25 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView title, body;
+        ImageView delete;
 
-        public ViewHolder(View view) {
+        public ViewHolder(View view, final OnItemClickListener listener) {
             super(view);
             title = view.findViewById(R.id.titleTextView);
             body = view.findViewById(R.id.bodyTextView);
+            delete = view.findViewById(R.id.deleteImageView);
 
+            delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(listener != null){
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION){
+                            listener.onItemDelete(position);
+                        }
+                    }
+                }
+            });
         }
     }
 }

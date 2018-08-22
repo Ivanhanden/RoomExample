@@ -29,6 +29,9 @@ public class MainActivity extends BaseActivity {
     private LinearLayoutManager layoutManager;
 
     private NotesAdapter notesAdapter;
+
+    private List<Note> noteList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,8 +46,8 @@ public class MainActivity extends BaseActivity {
             public void onClick(View v) {
                 if(!TextUtils.isEmpty(titleEditText.getText().toString()) && !TextUtils.isEmpty(bodyEditText.getText().toString())){
                     AppDatabase.getAppDatabase(MainActivity.this).noteDao().insert(new Note(titleEditText.getText().toString(), bodyEditText.getText().toString()));
-                    List<Note> updatedList = getNoteList();
-                    notesAdapter.updateList(updatedList);
+                    noteList = getNoteList();
+                    notesAdapter.updateList(noteList);
                 } else{
                     Toast.makeText(getApplicationContext(), "Empty note", Toast.LENGTH_LONG).show();
                 }
@@ -58,7 +61,7 @@ public class MainActivity extends BaseActivity {
         updateUI(getNoteList());
     }
 
-    private void updateUI(List<Note> noteList) {
+    private void updateUI(final List<Note> noteList) {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setVisibility(View.VISIBLE);
         recyclerView.setHasFixedSize(true);
@@ -68,6 +71,15 @@ public class MainActivity extends BaseActivity {
 
         notesAdapter = new NotesAdapter(noteList, MainActivity.this);
         recyclerView.setAdapter(notesAdapter);
+
+        notesAdapter.setOnItemClickListener(new NotesAdapter.OnItemClickListener() {
+            @Override
+            public void onItemDelete(int position) {
+                AppDatabase.getAppDatabase(MainActivity.this).noteDao().delete(noteList.get(position));
+                noteList.remove(position);
+                notesAdapter.updateList(noteList);
+            }
+        });
     }
 
     private List<Note> getNoteList() {
