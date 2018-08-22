@@ -2,7 +2,11 @@ package com.example.user.roomexample.ui.activities;
 
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.user.roomexample.R;
 import com.example.user.roomexample.data.database.AppDatabase;
@@ -17,46 +21,61 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class MainActivity extends BaseActivity {
 
+    private EditText titleEditText;
+    private EditText bodyEditText;
+    private Button   addButton;
+    private RecyclerView recyclerView;
+
+    private LinearLayoutManager layoutManager;
+
+    private NotesAdapter notesAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         restoreData();
+
+        titleEditText = (EditText) findViewById(R.id.titleEditText);
+        bodyEditText  = (EditText) findViewById(R.id.bodyEditText);
+        addButton     = (Button)   findViewById(R.id.button);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!TextUtils.isEmpty(titleEditText.getText().toString()) && !TextUtils.isEmpty(bodyEditText.getText().toString())){
+                    AppDatabase.getAppDatabase(MainActivity.this).noteDao().insert(new Note(titleEditText.getText().toString(), bodyEditText.getText().toString()));
+                    List<Note> updatedList = getNoteList();
+                    notesAdapter.updateList(updatedList);
+                } else{
+                    Toast.makeText(getApplicationContext(), "Empty note", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     private void restoreData() {
-        AppDatabase db = AppDatabase.getAppDatabase(this);
-        List<Note> noteList = db.noteDao().getAll();
+        //AppDatabase db = AppDatabase.getAppDatabase(this);
+        //List<Note> noteList = db.noteDao().getAll();
         updateUI(getNoteList());
     }
 
     private void updateUI(List<Note> noteList) {
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setVisibility(View.VISIBLE);
         recyclerView.setHasFixedSize(true);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+        layoutManager = new LinearLayoutManager(MainActivity.this);
         recyclerView.setLayoutManager(layoutManager);
 
-        NotesAdapter notesAdapter = new NotesAdapter(noteList, MainActivity.this);
+        notesAdapter = new NotesAdapter(noteList, MainActivity.this);
         recyclerView.setAdapter(notesAdapter);
     }
 
     private List<Note> getNoteList() {
-        List<Note> list = new ArrayList<>();
-        list.add(createNote("Title 1", "Body 1"));
-        list.add(createNote("Title 2", "Body 2"));
-        list.add(createNote("Title 3", "Body 3"));
-        return list;
+        /*AppDatabase.getAppDatabase(this).noteDao().insertAll(
+                createNote("Title 1", "Body 1"),
+                createNote("Title 2", "Body 2"),
+                createNote("Title 3", "Body 3")
+        );*/
+        return AppDatabase.getAppDatabase(this).noteDao().getAll();
     }
-
-    private Note createNote(String title, String body) {
-        Note note = new Note();
-        note.setTitle(title);
-        note.setBody(body);
-        return note;
-    }
-
-
-
 }

@@ -42,6 +42,11 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         return dataset.size();
     }
 
+    public void updateList(List<Note> updatedList) {
+        dataset = updatedList;
+        notifyDataSetChanged();
+    }
+
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView title, body;
