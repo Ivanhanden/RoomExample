@@ -12,8 +12,6 @@ import com.example.user.roomexample.R;
 import com.example.user.roomexample.data.database.AppDatabase;
 import com.example.user.roomexample.domain.model.Note;
 import com.example.user.roomexample.ui.adapters.NotesAdapter;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,10 +21,6 @@ public class MainActivity extends BaseActivity {
 
     private EditText titleEditText;
     private EditText bodyEditText;
-    private Button   addButton;
-    private RecyclerView recyclerView;
-
-    private LinearLayoutManager layoutManager;
 
     private NotesAdapter notesAdapter;
 
@@ -38,9 +32,9 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         restoreData();
 
-        titleEditText = (EditText) findViewById(R.id.titleEditText);
-        bodyEditText  = (EditText) findViewById(R.id.bodyEditText);
-        addButton     = (Button)   findViewById(R.id.button);
+        titleEditText = findViewById(R.id.titleEditText);
+        bodyEditText  = findViewById(R.id.bodyEditText);
+        Button addButton = findViewById(R.id.button);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,17 +50,15 @@ public class MainActivity extends BaseActivity {
     }
 
     private void restoreData() {
-        //AppDatabase db = AppDatabase.getAppDatabase(this);
-        //List<Note> noteList = db.noteDao().getAll();
         updateUI(getNoteList());
     }
 
-    private void updateUI(final List<Note> noteList) {
-        recyclerView = findViewById(R.id.recyclerView);
+    private void updateUI(List<Note> noteList) {
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setVisibility(View.VISIBLE);
         recyclerView.setHasFixedSize(true);
 
-        layoutManager = new LinearLayoutManager(MainActivity.this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
         recyclerView.setLayoutManager(layoutManager);
 
         notesAdapter = new NotesAdapter(noteList, MainActivity.this);
@@ -75,19 +67,18 @@ public class MainActivity extends BaseActivity {
         notesAdapter.setOnItemClickListener(new NotesAdapter.OnItemClickListener() {
             @Override
             public void onItemDelete(int position) {
-                AppDatabase.getAppDatabase(MainActivity.this).noteDao().delete(noteList.get(position));
-                noteList.remove(position);
-                notesAdapter.updateListAfterRemoving(position);
+                deleteItem(position);
             }
         });
     }
 
+    private void deleteItem(int position){
+        AppDatabase.getAppDatabase(MainActivity.this).noteDao().delete(noteList.get(position));
+        noteList.remove(position);
+        notesAdapter.updateListAfterRemoving(position);
+    }
+
     private List<Note> getNoteList() {
-        /*AppDatabase.getAppDatabase(this).noteDao().insertAll(
-                createNote("Title 1", "Body 1"),
-                createNote("Title 2", "Body 2"),
-                createNote("Title 3", "Body 3")
-        );*/
         return AppDatabase.getAppDatabase(this).noteDao().getAll();
     }
 }
