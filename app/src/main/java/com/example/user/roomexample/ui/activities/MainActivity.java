@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.example.user.roomexample.R;
 import com.example.user.roomexample.data.database.AppDatabase;
+import com.example.user.roomexample.data.database.NoteDao;
 import com.example.user.roomexample.domain.model.Note;
 import com.example.user.roomexample.ui.adapters.NotesAdapter;
 import java.util.List;
@@ -17,20 +18,17 @@ import java.util.List;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements NotesAdapter.OnItemClickListener{
 
     private EditText titleEditText;
     private EditText bodyEditText;
 
     private NotesAdapter notesAdapter;
 
-    private List<Note> noteList;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        restoreData();
 
         titleEditText = findViewById(R.id.titleEditText);
         bodyEditText  = findViewById(R.id.bodyEditText);
@@ -38,15 +36,17 @@ public class MainActivity extends BaseActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!TextUtils.isEmpty(titleEditText.getText().toString()) && !TextUtils.isEmpty(bodyEditText.getText().toString())){
+                if(!TextUtils.isEmpty(titleEditText.getText().toString())
+                        && !TextUtils.isEmpty(bodyEditText.getText().toString())){
                     AppDatabase.getAppDatabase(MainActivity.this).noteDao().insert(new Note(titleEditText.getText().toString(), bodyEditText.getText().toString()));
-                    noteList = getNoteList();
+                    List<Note> noteList = getNoteList();
                     notesAdapter.updateList(noteList);
                 } else{
                     Toast.makeText(getApplicationContext(), "Empty note", Toast.LENGTH_LONG).show();
                 }
             }
         });
+        restoreData();
     }
 
     private void restoreData() {
@@ -63,22 +63,20 @@ public class MainActivity extends BaseActivity {
 
         notesAdapter = new NotesAdapter(noteList, MainActivity.this);
         recyclerView.setAdapter(notesAdapter);
-
-        notesAdapter.setOnItemClickListener(new NotesAdapter.OnItemClickListener() {
-            @Override
-            public void onItemDelete(int position) {
-                deleteItem(position);
-            }
-        });
-    }
-
-    private void deleteItem(int position){
-        AppDatabase.getAppDatabase(MainActivity.this).noteDao().delete(noteList.get(position));
-        noteList.remove(position);
-        notesAdapter.updateListAfterRemoving(position);
     }
 
     private List<Note> getNoteList() {
-        return AppDatabase.getAppDatabase(this).noteDao().getAll();
+        return AppDatabase.getAppDatabase(MainActivity.this).noteDao().getAll();
+    }
+
+    @Override
+    protected void onDestroy() {
+        AppDatabase.destroyInstance();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onItemDelete(Note note) {
+        AppDatabase.getAppDatabase(MainActivity.this).noteDao().delete(note);
     }
 }

@@ -14,35 +14,43 @@ import java.util.List;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> {
+public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> implements View.OnClickListener{
     private List<Note> dataset;
-    private Context context;
     private OnItemClickListener mListener;
 
-    public interface OnItemClickListener{
-        void onItemDelete(int position);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener listener){
-        mListener = listener;
-    }
-
-    public NotesAdapter(List<Note> dataset, Context context) {
+    public NotesAdapter(List<Note> dataset, OnItemClickListener onItemClickListener) {
         this.dataset = dataset;
-        this.context = context;
+        this.mListener = onItemClickListener;
     }
 
     @Override
     public NotesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.note_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_item, parent, false);
         return new ViewHolder(view, mListener);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Note film = dataset.get(position);
-        holder.title.setText(film.getTitle());
-        holder.body.setText(film.getBody().replaceAll("[\n]", ""));
+        Note note = dataset.get(position);
+        holder.title.setText(note.getTitle());
+        holder.body.setText(note.getBody().replaceAll("[\n]", ""));
+
+        holder.delete.setOnClickListener(this);
+        holder.delete.setTag(position);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(mListener != null){
+            int position = (int)v.getTag();
+            if(position != RecyclerView.NO_POSITION){
+                Note note = dataset.get(position);
+                mListener.onItemDelete(note);
+                dataset.remove(note);
+                notifyItemRemoved(position);
+                notifyItemRangeChanged(position, dataset.size());
+            }
+        }
     }
 
     @Override
@@ -55,32 +63,21 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
-    public void updateListAfterRemoving(int position){
-        notifyItemRemoved(position);
-    }
-
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        View mView;
         TextView title, body;
         ImageView delete;
 
         public ViewHolder(View view, final OnItemClickListener listener) {
             super(view);
+            mView = view;
             title = view.findViewById(R.id.titleTextView);
             body = view.findViewById(R.id.bodyTextView);
             delete = view.findViewById(R.id.deleteImageView);
-
-            delete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(listener != null){
-                        int position = getAdapterPosition();
-                        if(position != RecyclerView.NO_POSITION){
-                            listener.onItemDelete(position);
-                        }
-                    }
-                }
-            });
         }
+    }
+
+    public interface OnItemClickListener{
+        void onItemDelete(Note note);
     }
 }
