@@ -15,7 +15,7 @@ public class NoteRepository {
     private NoteDao noteDao;
     private LiveData<List<Note>> allNotes;
 
-    public NoteRepository(Application application){
+    public NoteRepository(Application application) {
         AppDatabase database = AppDatabase.getAppDatabase(application);
         noteDao = database.noteDao();
         allNotes = noteDao.getAllNotes();

@@ -12,13 +12,19 @@ import com.example.user.roomexample.R;
 import com.example.user.roomexample.data.database.AppDatabase;
 import com.example.user.roomexample.data.entity.Note;
 import com.example.user.roomexample.ui.adapter.NotesAdapter;
+import com.example.user.roomexample.ui.viewmodel.NoteViewModel;
+
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class MainActivity extends BaseActivity implements NotesAdapter.OnItemClickListener{
+public class MainActivity extends BaseActivity implements NotesAdapter.OnItemClickListener {
 
+    private NoteViewModel noteViewModel;
     private EditText titleEditText;
     private EditText bodyEditText;
 
@@ -29,18 +35,28 @@ public class MainActivity extends BaseActivity implements NotesAdapter.OnItemCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        noteViewModel = ViewModelProviders.of(this).get(NoteViewModel.class);
+
+        noteViewModel.getAllNotes().observe(this, new Observer<List<Note>>() {
+            @Override
+            public void onChanged(@Nullable List<Note> notes) {
+                //update RecyclerView
+                Toast.makeText(MainActivity.this, "onChanged", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         titleEditText = findViewById(R.id.titleEditText);
-        bodyEditText  = findViewById(R.id.bodyEditText);
+        bodyEditText = findViewById(R.id.bodyEditText);
         Button addButton = findViewById(R.id.button);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!TextUtils.isEmpty(titleEditText.getText().toString())
-                        && !TextUtils.isEmpty(bodyEditText.getText().toString())){
+                if (!TextUtils.isEmpty(titleEditText.getText().toString())
+                        && !TextUtils.isEmpty(bodyEditText.getText().toString())) {
                     AppDatabase.getAppDatabase(MainActivity.this).noteDao().insert(new Note(titleEditText.getText().toString(), bodyEditText.getText().toString()));
                     List<Note> noteList = getNoteList();
                     notesAdapter.updateList(noteList);
-                } else{
+                } else {
                     Toast.makeText(getApplicationContext(), "Empty note", Toast.LENGTH_LONG).show();
                 }
             }

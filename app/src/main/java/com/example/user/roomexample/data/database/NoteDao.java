@@ -1,4 +1,5 @@
 package com.example.user.roomexample.data.database;
+
 import com.example.user.roomexample.data.entity.Note;
 
 import java.util.List;

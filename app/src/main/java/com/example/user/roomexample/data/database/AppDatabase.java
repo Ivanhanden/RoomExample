@@ -12,7 +12,7 @@ import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 @Database(entities = {Note.class}, version = 2, exportSchema = false)
-public abstract class AppDatabase extends RoomDatabase{
+public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase instance;
     private static final String DATABASE_NAME = "NoteDb.db";
 

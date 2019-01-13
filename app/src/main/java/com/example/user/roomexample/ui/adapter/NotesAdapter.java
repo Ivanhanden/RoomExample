@@ -13,7 +13,7 @@ import java.util.List;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> implements View.OnClickListener{
+public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> implements View.OnClickListener {
     private List<Note> dataset;
     private OnItemClickListener mListener;
 
@@ -40,9 +40,9 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
 
     @Override
     public void onClick(View v) {
-        if(mListener != null){
-            int position = (int)v.getTag();
-            if(position != RecyclerView.NO_POSITION){
+        if (mListener != null) {
+            int position = (int) v.getTag();
+            if (position != RecyclerView.NO_POSITION) {
                 Note note = dataset.get(position);
                 mListener.onItemDelete(note);
                 dataset.remove(note);
@@ -67,7 +67,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         TextView title, body;
         ImageView delete;
 
-    ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             mView = view;
             title = view.findViewById(R.id.titleTextView);
@@ -76,7 +76,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         }
     }
 
-    public interface OnItemClickListener{
+    public interface OnItemClickListener {
         void onItemDelete(Note note);
     }
 }
