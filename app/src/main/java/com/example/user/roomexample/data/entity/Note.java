@@ -1,9 +1,9 @@
-package com.example.user.roomexample.domain.model;
+package com.example.user.roomexample.data.entity;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity
+@Entity(tableName = "note_table")
 public class Note {
     @PrimaryKey(autoGenerate = true)
     private int id;
@@ -12,9 +12,12 @@ public class Note {
 
     private String body;
 
-    public Note(String title, String body) {
+    private int priority;
+
+    public Note(String title, String body, int priority) {
         this.title = title;
         this.body = body;
+        this.priority = priority;
     }
 
     public int getId() {
@@ -40,4 +43,13 @@ public class Note {
     public void setBody(String body) {
         this.body = body;
     }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
 }

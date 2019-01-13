@@ -1,4 +1,4 @@
-package com.example.user.roomexample.ui.activities;
+package com.example.user.roomexample.ui.activity;
 
 
 import android.os.Bundle;
@@ -10,9 +10,8 @@ import android.widget.Toast;
 
 import com.example.user.roomexample.R;
 import com.example.user.roomexample.data.database.AppDatabase;
-import com.example.user.roomexample.data.database.NoteDao;
-import com.example.user.roomexample.domain.model.Note;
-import com.example.user.roomexample.ui.adapters.NotesAdapter;
+import com.example.user.roomexample.data.entity.Note;
+import com.example.user.roomexample.ui.adapter.NotesAdapter;
 import java.util.List;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -75,8 +74,4 @@ public class MainActivity extends BaseActivity implements NotesAdapter.OnItemCli
         super.onDestroy();
     }
 
-    @Override
-    public void onItemDelete(Note note) {
-        AppDatabase.getAppDatabase(MainActivity.this).noteDao().delete(note);
-    }
 }

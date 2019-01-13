@@ -1,4 +1,4 @@
-package com.example.user.roomexample.ui.activities;
+package com.example.user.roomexample.ui.activity;
 
 import android.os.Bundle;
 import android.util.Log;

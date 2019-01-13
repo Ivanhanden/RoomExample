@@ -1,6 +1,5 @@
-package com.example.user.roomexample.ui.adapters;
+package com.example.user.roomexample.ui.adapter;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,7 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.user.roomexample.R;
-import com.example.user.roomexample.domain.model.Note;
+import com.example.user.roomexample.data.entity.Note;
 
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     @Override
     public NotesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_item, parent, false);
-        return new ViewHolder(view, mListener);
+        return new ViewHolder(view);
     }
 
     @Override
@@ -63,12 +62,12 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         notifyDataSetChanged();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
         View mView;
         TextView title, body;
         ImageView delete;
 
-        public ViewHolder(View view, final OnItemClickListener listener) {
+    ViewHolder(View view) {
             super(view);
             mView = view;
             title = view.findViewById(R.id.titleTextView);
