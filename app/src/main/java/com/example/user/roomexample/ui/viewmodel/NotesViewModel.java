@@ -10,18 +10,14 @@ import java.util.List;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-public class NoteViewModel extends AndroidViewModel {
+public class NotesViewModel extends AndroidViewModel {
     private NoteRepository noteRepository;
     private LiveData<List<Note>> allNotes;
 
-    public NoteViewModel(Application application) {
+    public NotesViewModel(Application application) {
         super(application);
         noteRepository = new NoteRepository(application);
         allNotes = noteRepository.getAllNotes();
-    }
-
-    public void insert(Note note) {
-        noteRepository.insert(note);
     }
 
     public void update(Note note) {
