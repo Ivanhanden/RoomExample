@@ -11,12 +11,17 @@ import android.widget.Toast;
 
 import com.example.user.roomexample.R;
 import com.example.user.roomexample.data.entity.Note;
-import com.example.user.roomexample.ui.viewmodel.AddNoteViewModel;
+import com.example.user.roomexample.ui.viewmodel.AddEditNoteViewModel;
 
 import androidx.lifecycle.ViewModelProviders;
 
-public class AddNoteActivity extends BaseActivity {
-    private AddNoteViewModel addNoteViewModel;
+import static com.example.user.roomexample.ui.activity.MainActivity.EXTRA_DESCRIPTION;
+import static com.example.user.roomexample.ui.activity.MainActivity.EXTRA_ID;
+import static com.example.user.roomexample.ui.activity.MainActivity.EXTRA_PRIORITY;
+import static com.example.user.roomexample.ui.activity.MainActivity.EXTRA_TITLE;
+
+public class AddEditNoteActivity extends BaseActivity {
+    private AddEditNoteViewModel addEditNoteViewModel;
 
     private EditText editTextTitle;
     private EditText editTextDescription;
@@ -35,7 +40,16 @@ public class AddNoteActivity extends BaseActivity {
         numberPickerPriority.setMaxValue(10);
 
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
-        setTitle("Add Note");
+
+        Intent intent = getIntent();
+        if (intent.hasExtra(EXTRA_ID)) {
+            setTitle("Edit Note");
+            editTextTitle.setText(intent.getStringExtra(EXTRA_TITLE));
+            editTextDescription.setText(intent.getStringExtra(EXTRA_DESCRIPTION));
+            numberPickerPriority.setValue(intent.getIntExtra(EXTRA_PRIORITY, 1));
+        } else {
+            setTitle("Add Note");
+        }
     }
 
     private void saveNote() {
@@ -48,12 +62,18 @@ public class AddNoteActivity extends BaseActivity {
             return;
         }
 
-        addNoteViewModel = ViewModelProviders.of(this).get(AddNoteViewModel.class);
-        addNoteViewModel.insert(new Note(title, description, priority));
+        addEditNoteViewModel = ViewModelProviders.of(this).get(AddEditNoteViewModel.class);
+        Note note = new Note(title, description, priority);
 
-        Intent data = new Intent();
+        int id = getIntent().getIntExtra(EXTRA_ID, -1);
+        if (id != -1) {
+            note.setId(id);
+            addEditNoteViewModel.update(note);
+        } else {
+            addEditNoteViewModel.insert(note);
+        }
 
-        setResult(RESULT_OK, data);
+        setResult(RESULT_OK, new Intent());
         finish();
     }
 

@@ -7,15 +7,19 @@ import com.example.user.roomexample.data.repository.NoteRepository;
 
 import androidx.lifecycle.AndroidViewModel;
 
-public class AddNoteViewModel extends AndroidViewModel {
+public class AddEditNoteViewModel extends AndroidViewModel {
     private NoteRepository noteRepository;
 
-    public AddNoteViewModel(Application application) {
+    public AddEditNoteViewModel(Application application) {
         super(application);
         noteRepository = new NoteRepository(application);
     }
 
     public void insert(Note note) {
         noteRepository.insert(note);
+    }
+
+    public void update(Note note) {
+        noteRepository.update(note);
     }
 }
